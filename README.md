@@ -1,11 +1,12 @@
-# Query
+# Relation
 
-**TODO: Add description**
+Relation implements relational operators on Elixir enumerables,
+including inner, left, right, and outer joins.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `query` to your list of dependencies in `mix.exs`:
+This package package can be installed by adding `relation` to your
+list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -17,5 +18,4 @@ end
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/query](https://hexdocs.pm/query).
-
+be found at [https://hexdocs.pm/relation](https://hexdocs.pm/relation).
