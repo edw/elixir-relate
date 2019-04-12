@@ -3,7 +3,7 @@ defmodule Relate do
 
   Relate implements relational operators on Elixir enumerables.
 
-  Functions take two enumerables containing objects as well as one or
+  Join functions take two enumerables containing objects as well as one or
   two arguments to specify how the value to use as a basis for joining
   will be determined.
 
