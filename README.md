@@ -11,7 +11,7 @@ list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:relate, "~> 0.1.0"}
+    {:relate, "~> 0.3.1"}
   ]
 end
 ```
