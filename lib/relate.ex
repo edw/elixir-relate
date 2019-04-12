@@ -18,6 +18,69 @@ defmodule Relate do
   If `fki2` is not specified or is `nil` or `false`, the same accessor
   will be used on both `e1` and `e2`.
 
+  ## Example
+      iex> iso_countries = [
+      ...>   {"us", "United States"},
+      ...>   {"uk", "United Kingdom"},
+      ...>   {"ca", "Canada"},
+      ...>   {"de", "Germany"},
+      ...>   {"nl", "Netherlands"},
+      ...>   {"sg", "Singapore"},
+      ...>   {"ru", "Russian Federation"},
+      ...>   {"fr", "France"},
+      ...>   {"ja", "Japan"},
+      ...>   {"it", "Italy"},
+      ...>   {"hk", "Hong Kong"},
+      ...>   {"au", "Australia"},
+      ...>   {"ch", "Switzerland"},
+      ...>   {"be", "Belgium"},
+      ...>   {"rk", "Korea, Republic of"},
+      ...>   {"es", "Spain"},
+      ...>   {"il", "Israel"}
+      ...> ]
+      ...>
+      ...> country_clicks = [
+      ...>   {"United States", "13"},
+      ...>   {"United Kingdom", "11"},
+      ...>   {"Canada", "4"},
+      ...>   {"Germany", "4"},
+      ...>   {"Netherlands", "3"},
+      ...>   {"Singapore", "3"},
+      ...>   {"Russian Federation", "2"},
+      ...>   {"France", "2"},
+      ...>   {"Japan", "2"},
+      ...>   {"Italy", "2"},
+      ...>   {"Hong Kong", "2"},
+      ...>   {"Australia", "2"},
+      ...>   {"Switzerland", "1"},
+      ...>   {"Belgium", "1"},
+      ...>   {"Korea, Republic of", "1"},
+      ...>   {"Spain", "1"},
+      ...>   {"Israel", "1"}
+      ...> ]
+      ...>
+      ...> Relate.left_join(country_clicks, iso_countries, 0, 1)
+      ...> |> Relate.select([right: 0, left: 1])
+      [
+        {"us", "13"},
+        {"uk", "11"},
+        {"ca", "4"},
+        {"de", "4"},
+        {"nl", "3"},
+        {"sg", "3"},
+        {"ru", "2"},
+        {"fr", "2"},
+        {"ja", "2"},
+        {"it", "2"},
+        {"hk", "2"},
+        {"au", "2"},
+        {"ch", "1"},
+        {"be", "1"},
+        {"rk", "1"},
+        {"es", "1"},
+        {"il", "1"}
+      ]
+
   """
 
   @doc ~S"""
