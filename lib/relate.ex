@@ -27,17 +27,17 @@ defmodule Relate do
   respectively. If `fki2` is `nil` or `false`, `fki1` will be used to
   make comparisons on both enumerables.
 
-  ### Examples
+  ## Examples
 
-    iex> Relate.inner_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
-    ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
-    ...>                   :k, :k)
-    [{%{k: 1, v: "one"}, %{k: 1, v: "i"}}]
+      iex> Relate.inner_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
+      ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
+      ...>                   :k, :k)
+      [{%{k: 1, v: "one"}, %{k: 1, v: "i"}}]
 
-    iex> Relate.inner_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
-    ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
-    ...>                   :k)  # NOTE: only one key function
-    [{%{k: 1, v: "one"}, %{k: 1, v: "i"}}]
+      iex> Relate.inner_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
+      ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
+      ...>                   :k)  # NOTE: only one key function
+      [{%{k: 1, v: "one"}, %{k: 1, v: "i"}}]
 
   """
   def inner_join(e1, e2, fki1, fki2 \\ nil) do
@@ -60,17 +60,17 @@ defmodule Relate do
   form `{i, nil}` will be returned for every element of `e1` that did
   not match on any element in `e2`.
 
-  ### Examples
+  ## Examples
 
-    iex> Relate.left_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
-    ...>                  [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
-    ...>                  :k, :k)
-    [{%{k: 0, v: "zero"}, nil}, {%{k: 1, v: "one"}, %{k: 1, v: "i"}}]
+      iex> Relate.left_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
+      ...>                  [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
+      ...>                  :k, :k)
+      [{%{k: 0, v: "zero"}, nil}, {%{k: 1, v: "one"}, %{k: 1, v: "i"}}]
 
-    iex> Relate.left_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
-    ...>                  [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
-    ...>                  :k)  # NOTE: only one key function
-    [{%{k: 0, v: "zero"}, nil}, {%{k: 1, v: "one"}, %{k: 1, v: "i"}}]
+      iex> Relate.left_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
+      ...>                  [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
+      ...>                  :k)  # NOTE: only one key function
+      [{%{k: 0, v: "zero"}, nil}, {%{k: 1, v: "one"}, %{k: 1, v: "i"}}]
 
   """
   def left_join(e1, e2, fki1, fki2 \\ nil) do
@@ -106,17 +106,17 @@ defmodule Relate do
   form `{nil, i}` will be returned for every element of `e2` that did
   not match on any element in `e1`.
 
-  ### Examples
+  ## Examples
 
-    iex> Relate.right_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
-    ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
-    ...>                   :k, :k)
-    [{%{k: 1, v: "one"}, %{k: 1, v: "i"}}, {nil, %{k: 2, v: "ii"}}]
+      iex> Relate.right_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
+      ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
+      ...>                   :k, :k)
+      [{%{k: 1, v: "one"}, %{k: 1, v: "i"}}, {nil, %{k: 2, v: "ii"}}]
 
-    iex> Relate.right_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
-    ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
-    ...>                   :k)  # NOTE: only one key function
-    [{%{k: 1, v: "one"}, %{k: 1, v: "i"}}, {nil, %{k: 2, v: "ii"}}]
+      iex> Relate.right_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
+      ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
+      ...>                   :k)  # NOTE: only one key function
+      [{%{k: 1, v: "one"}, %{k: 1, v: "i"}}, {nil, %{k: 2, v: "ii"}}]
 
   """
   def right_join(e1, e2, fki1, fki2 \\ nil) do
@@ -152,17 +152,17 @@ defmodule Relate do
   form `{nil, i}` or `{i, nil}` will be returned for every element of
   `e2` that did not match on any element in `e1` and vice-versa.
 
-  ### Examples
+  ## Examples
 
-    iex> Relate.outer_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
-    ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
-    ...>                   :k, :k)
-    [{%{k: 0, v: "zero"}, nil}, {%{k: 1, v: "one"}, %{k: 1, v: "i"}}, {nil, %{k: 2, v: "ii"}}]
+      iex> Relate.outer_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
+      ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
+      ...>                   :k, :k)
+      [{%{k: 0, v: "zero"}, nil}, {%{k: 1, v: "one"}, %{k: 1, v: "i"}}, {nil, %{k: 2, v: "ii"}}]
 
-    iex> Relate.outer_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
-    ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
-    ...>                   :k)  # NOTE: only one key function
-    [{%{k: 0, v: "zero"}, nil}, {%{k: 1, v: "one"}, %{k: 1, v: "i"}}, {nil, %{k: 2, v: "ii"}}]
+      iex> Relate.outer_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
+      ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
+      ...>                   :k)  # NOTE: only one key function
+      [{%{k: 0, v: "zero"}, nil}, {%{k: 1, v: "one"}, %{k: 1, v: "i"}}, {nil, %{k: 2, v: "ii"}}]
 
   """
   def outer_join(e1, e2, fki1, fki2 \\ nil) do
