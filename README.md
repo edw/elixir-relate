@@ -17,4 +17,4 @@ end
 ```
 
 Documentation can be found at
-[https://hexdocs.pm/relate](https://hexdocs.pm/relate).
+[https://hexdocs.pm/relate/](https://hexdocs.pm/relate/).
