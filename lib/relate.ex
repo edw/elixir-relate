@@ -170,6 +170,44 @@ defmodule Relate do
     |> Enum.uniq()
   end
 
+
+  @doc ~S"""
+
+  For each two element tuple in enumerable `join`, select each row
+  specified by the `cols` keyword list. Each element `cols` should be
+  a tuple with an initial element of `:left` or `:right` and a second
+  element that acts as an accessor as in `inner_join/4` et al.
+
+  ## Example
+
+      iex> Relate.select([{{0, 1, 2}, {:a, :b, :c}},
+      ...>                {{3, 4, 5}, {:d, :e, :f}}],
+      ...>               [left: 0, right: 1, left: 2])
+      [{0, :b, 2}, {3, :e, 5}]
+
+  """
+  def select(join, cols) do
+    Enum.map(join, &(select1(&1, cols) |> List.to_tuple()))
+  end
+
+  defp select1(_t, []), do: []
+
+  defp select1(t = {nil, _right}, [{:left, _} | rest]) do
+    [nil | select1(t, rest)]
+  end
+
+  defp select1(t = {_left, nil}, [{:right, _} | rest]) do
+    [nil | select1(t, rest)]
+  end
+
+  defp select1(t = {left, _right}, [{:left, fki} | rest]) do
+    [to_f(fki).(left) | select1(t, rest)]
+  end
+
+  defp select1(t = {_left, right}, [{:right, fki} | rest]) do
+    [to_f(fki).(right) | select1(t, rest)]
+  end
+
   defp to_f(f) when is_function(f), do: f
   defp to_f(k) when is_atom(k), do: & &1[k]
   defp to_f(i) when is_integer(i) and i >= 0, do: &elem(&1, i)
