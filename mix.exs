@@ -9,7 +9,9 @@ defmodule Query.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: description(),
-      package: package()
+      package: package(),
+      name: "Query",
+      source_url: "https://github.com/edw/elixir-query"
     ]
   end
 
@@ -25,7 +27,7 @@ defmodule Query.MixProject do
 
   defp description() do
     """
-    Perform relational database joins on Elixir enumerables.
+    Query implements relational operators on Elixir enumerables
     """
   end
 
