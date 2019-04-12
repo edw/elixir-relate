@@ -1,17 +1,17 @@
-defmodule Relation.MixProject do
+defmodule Relate.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :relation,
+      app: :relate,
       version: "0.1.0",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: description(),
       package: package(),
-      name: "Relation",
-      source_url: "https://github.com/edw/elixir-relation"
+      name: "Relate",
+      source_url: "https://github.com/edw/elixir-relate"
     ]
   end
 
@@ -29,15 +29,15 @@ defmodule Relation.MixProject do
 
   defp description() do
     """
-    Relation implements relational operators on Elixir enumerables
+    Relate implements relational operators on Elixir enumerables
     """
   end
 
   defp package() do
     [
-      name: "relation",
+      name: "relate",
       licenses: ["Apache 2.0"],
-      links: %{"GitHub" => "https://github.com/edw/elixir-relation"}
+      links: %{"GitHub" => "https://github.com/edw/elixir-relate"}
     ]
   end
 end

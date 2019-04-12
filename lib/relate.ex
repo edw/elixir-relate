@@ -1,6 +1,6 @@
-defmodule Relation do
+defmodule Relate do
   @moduledoc """
-  Relation implements relational operators on Elixir enumerables. It
+  Relate implements relational operators on Elixir enumerables. It
   currently supports four types of joins: inner, left, right, and
   outer.
   """
