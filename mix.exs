@@ -13,7 +13,7 @@ defmodule Query.MixProject do
     ]
   end
 
-    # Run "mix help compile.app" to learn about applications.
+  # Run "mix help compile.app" to learn about applications.
   def application do
     []
   end
@@ -34,5 +34,6 @@ defmodule Query.MixProject do
       name: "query",
       licenses: ["Apache 2.0"],
       links: %{"GitHub" => "https://github.com/edw/elixir-query"}
+    ]
   end
 end
