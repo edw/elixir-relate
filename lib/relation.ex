@@ -1,6 +1,6 @@
-defmodule Query do
+defmodule Relation do
   @moduledoc """
-  Query implements relational operators on Elixir enumerables. It
+  Relation implements relational operators on Elixir enumerables. It
   currently supports four types of joins: inner, left, right, and
   outer.
   """

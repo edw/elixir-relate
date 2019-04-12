@@ -1,17 +1,17 @@
-defmodule Query.MixProject do
+defmodule Relation.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :query,
+      app: :relation,
       version: "0.1.0",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: description(),
       package: package(),
-      name: "Query",
-      source_url: "https://github.com/edw/elixir-query"
+      name: "Relation",
+      source_url: "https://github.com/edw/elixir-relation"
     ]
   end
 
@@ -29,15 +29,15 @@ defmodule Query.MixProject do
 
   defp description() do
     """
-    Query implements relational operators on Elixir enumerables
+    Relation implements relational operators on Elixir enumerables
     """
   end
 
   defp package() do
     [
-      name: "query",
+      name: "relation",
       licenses: ["Apache 2.0"],
-      links: %{"GitHub" => "https://github.com/edw/elixir-query"}
+      links: %{"GitHub" => "https://github.com/edw/elixir-relation"}
     ]
   end
 end
