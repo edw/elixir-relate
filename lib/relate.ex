@@ -61,24 +61,25 @@ defmodule Relate do
       ...>
       ...> Relate.left_join(country_clicks, iso_countries, 0, 1)
       ...> |> Relate.select([right: 0, left: 1])
+      ...> |> Enum.sort_by(&elem(&1, 0))
       [
-        {"us", "13"},
-        {"uk", "11"},
-        {"ca", "4"},
-        {"de", "4"},
-        {"nl", "3"},
-        {"sg", "3"},
-        {"ru", "2"},
-        {"fr", "2"},
-        {"ja", "2"},
-        {"it", "2"},
-        {"hk", "2"},
         {"au", "2"},
-        {"ch", "1"},
         {"be", "1"},
-        {"rk", "1"},
+        {"ca", "4"},
+        {"ch", "1"},
+        {"de", "4"},
         {"es", "1"},
-        {"il", "1"}
+        {"fr", "2"},
+        {"hk", "2"},
+        {"il", "1"},
+        {"it", "2"},
+        {"ja", "2"},
+        {"nl", "3"},
+        {"rk", "1"},
+        {"ru", "2"},
+        {"sg", "3"},
+        {"uk", "11"},
+        {"us", "13"}
       ]
 
   """
@@ -103,15 +104,37 @@ defmodule Relate do
       [{%{k: 1, v: "one"}, %{k: 1, v: "i"}}]
 
   """
-  def inner_join(e1, e2, fki1, fki2 \\ nil) do
-    f1 = to_f(fki1)
-    f2 = to_f(fki2 || f1)
+  def inner_join(ds1, ds2, fki1, fki2 \\ nil) do
+    {i1, i2} = indices(ds1, ds2, fki1, fki2)
+    Enum.flat_map(intersection(Map.keys(i1), Map.keys(i2)), &rows(&1, i1, i2))
+  end
 
-    for x1 <- e1,
-        x2 <- e2,
-        f1.(x1) == f2.(x2) do
-      {x1, x2}
-    end
+  @doc """
+
+  Return an enumerable of tuples containing all elements of `e1` and
+  `e2` which yield the same value when `fki1` and `fki2` are applied,
+  respectively. If `fki2` is `nil` or `false`, `fki1` will be used to
+  make comparisons on both enumerables. Additionally, a tuple of the
+  form `{nil, i}` or `{i, nil}` will be returned for every element of
+  `e2` that did not match on any element in `e1` and vice-versa.
+
+  ## Examples
+
+      iex> Relate.outer_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
+      ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
+      ...>                   :k, :k)
+      [{%{k: 0, v: "zero"}, nil}, {%{k: 1, v: "one"}, %{k: 1, v: "i"}}, {nil, %{k: 2, v: "ii"}}]
+
+      iex> Relate.outer_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
+      ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
+      ...>                   :k)  # NOTE: only one key function
+      ...> |> Enum.sort()
+      [{nil, %{k: 2, v: "ii"}}, {%{k: 0, v: "zero"}, nil}, {%{k: 1, v: "one"}, %{k: 1, v: "i"}}]
+
+  """
+  def outer_join(ds1, ds2, fki1, fki2 \\ nil) do
+    {i1, i2} = indices(ds1, ds2, fki1, fki2)
+    Enum.flat_map(union(Map.keys(i1), Map.keys(i2)), &rows(&1, i1, i2))
   end
 
   @doc """
@@ -136,28 +159,9 @@ defmodule Relate do
       [{%{k: 0, v: "zero"}, nil}, {%{k: 1, v: "one"}, %{k: 1, v: "i"}}]
 
   """
-  def left_join(e1, e2, fki1, fki2 \\ nil) do
-    f1 = to_f(fki1)
-    f2 = to_f(fki2 || f1)
-
-    for x <- e1, reduce: [] do
-      acc ->
-        Enum.concat(acc, left_join_helper(x, e2, f1, f2))
-    end
-  end
-
-  defp left_join_helper(x, e, f1, f2) do
-    Enum.reduce(
-      e,
-      [{x, nil}],
-      fn
-        y, acc = [{^x, nil}] ->
-          if f1.(x) == f2.(y), do: [{x, y}], else: acc
-
-        y, acc ->
-          if f1.(x) == f2.(y), do: [{x, y} | acc], else: acc
-      end
-    )
+  def left_join(ds1, ds2, fki1, fki2 \\ nil) do
+    {i1, i2} = indices(ds1, ds2, fki1, fki2)
+    Enum.flat_map(Map.keys(i1), &rows(&1, i1, i2))
   end
 
   @doc """
@@ -182,57 +186,37 @@ defmodule Relate do
       [{%{k: 1, v: "one"}, %{k: 1, v: "i"}}, {nil, %{k: 2, v: "ii"}}]
 
   """
-  def right_join(e1, e2, fki1, fki2 \\ nil) do
-    f1 = to_f(fki1)
-    f2 = to_f(fki2 || f1)
-
-    for x <- e2, reduce: [] do
-      acc ->
-        Enum.concat(acc, right_join_helper(x, e1, f1, f2))
-    end
+  def right_join(ds1, ds2, fki1, fki2 \\ nil) do
+    {i1, i2} = indices(ds1, ds2, fki1, fki2)
+    Enum.flat_map(Map.keys(i2), &rows(&1, i1, i2))
   end
 
-  defp right_join_helper(x, e, f1, f2) do
-    Enum.reduce(
-      e,
-      [{nil, x}],
-      fn
-        y, acc = [{nil, ^x}] ->
-          if f2.(x) == f1.(y), do: [{y, x}], else: acc
+  defp rows(k, i1, i2) do
+    for t1 <- Map.get(i1, k, MapSet.new([nil])),
+        t2 <- Map.get(i2, k, MapSet.new([nil])),
+        do: {t1, t2}
+  end
 
-        y, acc ->
-          if f2.(x) == f1.(y), do: [{y, x} | acc], else: acc
-      end
+  defp indices(ds1, ds2, fki1, fki2) do
+    {make_index(ds1, to_f(fki1)), make_index(ds2, to_f(fki2 || fki1))}
+  end
+
+  defp make_index(ds, f) do
+    Enum.map(ds, &{f.(&1), &1})
+    |> Enum.reduce(
+      %{},
+      fn {k, v}, acc -> update_in(acc, [k], &set_put(&1, v)) end
     )
   end
 
-  @doc """
+  defp set_put(s, el), do: MapSet.put(to_set(s), el)
+  defp to_set(nil), do: MapSet.new()
+  defp to_set(x), do: MapSet.new(x)
+  defp union(s1, s2), do: MapSet.union(MapSet.new(s1), MapSet.new(s2))
 
-  Return an enumerable of tuples containing all elements of `e1` and
-  `e2` which yield the same value when `fki1` and `fki2` are applied,
-  respectively. If `fki2` is `nil` or `false`, `fki1` will be used to
-  make comparisons on both enumerables. Additionally, a tuple of the
-  form `{nil, i}` or `{i, nil}` will be returned for every element of
-  `e2` that did not match on any element in `e1` and vice-versa.
-
-  ## Examples
-
-      iex> Relate.outer_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
-      ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
-      ...>                   :k, :k)
-      [{%{k: 0, v: "zero"}, nil}, {%{k: 1, v: "one"}, %{k: 1, v: "i"}}, {nil, %{k: 2, v: "ii"}}]
-
-      iex> Relate.outer_join([%{k: 0, v: "zero"}, %{k: 1, v: "one"}],
-      ...>                   [%{k: 1, v: "i"}, %{k: 2, v: "ii"}],
-      ...>                   :k)  # NOTE: only one key function
-      [{%{k: 0, v: "zero"}, nil}, {%{k: 1, v: "one"}, %{k: 1, v: "i"}}, {nil, %{k: 2, v: "ii"}}]
-
-  """
-  def outer_join(e1, e2, fki1, fki2 \\ nil) do
-    Enum.concat(left_join(e1, e2, fki1, fki2), right_join(e1, e2, fki1, fki2))
-    |> Enum.uniq()
+  defp intersection(s1, s2) do
+    MapSet.intersection(MapSet.new(s1), MapSet.new(s2))
   end
-
 
   @doc ~S"""
 
